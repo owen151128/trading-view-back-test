@@ -85,7 +85,7 @@ def main():
     trade_data = TradingViewCsvParser.parse_trading_view_csv(args.i)
     binance_klines_data = pd.read_excel(args.b, sheet_name='Sheet1', index_col=0)
     backtest = Backtest(balance, trade_data, binance_klines_data)
-    backtest.calculate_balance(True)
+    backtest.calculate_balance(False, 1)
 
 
 if __name__ == '__main__':
