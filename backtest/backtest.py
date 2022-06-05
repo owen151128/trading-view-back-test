@@ -82,8 +82,8 @@ class Backtest:
             liquidation_percent = 100 / leverage_rate
             liquidation_price = opened_price * (1 - liquidation_percent / 100) if before_position == 'Long' \
                 else opened_price * (1 + liquidation_percent / 100)
-            stop_loss_price = opened_price * (1 - stop_loss / opened_price / leverage_rate) \
-                if before_position == 'Long' else opened_price * (1 + stop_loss / opened_price / leverage_rate)
+            stop_loss_price = opened_price * (1 - stop_loss / self.balance / leverage_rate) \
+                if before_position == 'Long' else opened_price * (1 + stop_loss / self.balance / leverage_rate)
             for e in range(int(elapsed_times)):
                 if is_1min:
                     current_candle_time = (before_datetime + timedelta(minutes=e)) \
