@@ -54,6 +54,7 @@ window.onload = () => {
 
                 const message = document.createElement('h1');
                 message.innerHTML = "백테스팅중..."
+                backtestResult.innerHTML = ""
                 backtestResult.appendChild(message);
 
                 const param = {
@@ -92,6 +93,7 @@ window.onload = () => {
 
                         backtestResult.innerHTML = "";
                         backtestResult.appendChild(table);
+                        alert('백테스팅이 완료 되었습니다!')
                     },
                     error: (request, status, error) => {
                         alert("오류 : " + status + " / " + error);
