@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='assets/favicon.ico') }}"/>
+    <link href="{{ url_for('static', filename='css/sidebars.css') }}" rel="stylesheet">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <title>TradingView 백테</title>
+</head>
+<body class="bg-dark text-white">
+<nav class="navbar navbar-expand-lg navbar-dark bg-black">
+    <div class="container">
+        <a class="navbar-brand" href="#">TradingView 백테 Beta</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+                class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li>
+                    {% if user_id is defined %}
+                        <p class="nav-item text-white h2">{{ user_id }}님</p>
+                    {% else %}
+                        <button class="btn btn-primary" onclick="location.href='/login/form'">로그인</button>
+                    {% endif %}
+                </li>
+            </ul>
+            {% if user_id is defined %}
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li>
+                        <button class="btn btn-primary" onclick="location.href='/login/logout'">로그아웃</button>
+                    </li>
+                </ul>
+            {% else %}
+            {% endif %}
+        </div>
+    </div>
+</nav>
+<!-- Page content-->
+<div class="container">
+    <div class="text-center mt-5">
+        {% if user_id is defined %}
+            <h1>이곳에 TradingView 전략 CSV 파일을 업로드 해주세요.</h1>
+            <div class="mt-5 w-50 upload-box">
+                <h3>이곳으로 CSV 를 드래그 앤 드롭 해주세요.</h3>
+                <h3 class="file-name"></h3>
+                <input class="btn-file d-none" type="file">
+            </div>
+            <div class="mt-5">
+                <button class="btn btn-secondary" id="clearButton">파일 비우기</button>
+            </div>
+            <div class="div_center w-50 mt-3 form-floating">
+                <input type="number" class="form-control bg-dark text-white" id="balance" value="0">
+                <label for="balance">잔고($)</label>
+            </div>
+            <div class="div_center w-50 mt-3 form-floating">
+                <input type="number" class="form-control bg-dark text-white" id="leverage" value="0">
+                <label for="leverage">레버리지(배율)</label>
+            </div>
+            <div class="mt-5">
+                <select class="w-50 form-select bg-dark text-white" id="candle_size" aria-label="candle_size">
+                    <option selected value="nop">캔들 크기 선택</option>
+                    <option value="1m">1분봉</option>
+                    <option value="1h">1시간봉</option>
+                    <option value="2h">2시간봉</option>
+                    <option value="4h">4시간봉</option>
+                    <option value="6h">6시간봉</option>
+                    <option value="8h">8시간봉</option>
+                    <option value="12h">12시간봉</option>
+                    <option value="1d">1일봉</option>
+                    <option value="3d">3일봉</option>
+                    <option value="1w">1주봉</option>
+                    <option value="1m">1달봉</option>
+                </select>
+            </div>
+            <div class="mt-5">
+                <button class="btn btn-primary" id="startButton">백테스트 시작</button>
+            </div>
+            <div class="mt-5">
+                <button class="btn btn-primary" onclick="window.scrollTo(0, document.body.scrollHeight)">맨 아래로 이동
+                </button>
+            </div>
+            <div class="mt-5" id="backtest_result"></div>
+            <div class="mt-5 text-center">
+                <button class="btn btn-primary" onclick="window.scrollTo(0, 0)">맨 위로 이동
+                </button>
+            </div>
+        {% else %}
+            <h1>사용 하려면 로그인 해야 합니다.</h1>
+        {% endif %}
+    </div>
+</div>
+<footer class="py-3 my-4 fixed-bottom">
+    <p class="text-center text-white">© 2022 owen151128</p>
+</footer>
+</body>
+<script type="text/javascript">
+    const token = "{{ user_token }}";
+</script>
+</html>

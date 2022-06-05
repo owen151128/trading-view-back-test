@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from base64 import b64decode
+from io import StringIO
+
 import csv
 
 
@@ -12,6 +15,18 @@ class TradingViewCsvParser:
             for i, v in enumerate(trading_view_csv):
                 if i % 2 == 1:
                     trade_data.append((v[2], v[3]))
+
+        trade_data.reverse()
+        return trade_data
+
+    @staticmethod
+    def parse_trading_view_csv_from_encoded(encoded: str) -> list:
+        decoded = StringIO(b64decode(encoded).decode(encoding='utf-8'))
+        trade_data = []
+        trading_view_csv = csv.reader(decoded)
+        for i, v in enumerate(trading_view_csv):
+            if i % 2 == 1:
+                trade_data.append((v[2], v[3]))
 
         trade_data.reverse()
         return trade_data

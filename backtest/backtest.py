@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 
 from exchange.binance_history_klines_manager import BinanceHistoryKlinesManager
 
+import json
+
 
 class Backtest:
     is_first = True
@@ -18,7 +20,8 @@ class Backtest:
         self.trade_data = trade_data
         self.binance_klines_data = binance_klines_data
 
-    def calculate_balance(self, is_day: bool, leverage_rate: int = 1):
+    def calculate_balance(self, is_day: bool, leverage_rate: int = 1) -> str:
+        result = {}
         total_trade_count = len(self.trade_data)
         total_fee = 0
         total_win_pnl = 0
@@ -84,13 +87,21 @@ class Backtest:
                     high, low = candle["high"], candle["low"]
 
                     if before_position == 'Long' and liquidation_price >= low:
-                        print(f'[*] Liquidation(Long) : {current_candle_time} / '
-                              f'Liquidation price : {liquidation_price}, low : {low}, tissue : ${self.balance}... GG')
-                        exit(0)
+                        result['Liquidation(Long)'] = current_candle_time
+                        result['Liquidation price'] = liquidation_price
+                        result['Liquidation low'] = low
+                        result['Liquidation tissue'] = f'${self.balance}'
+                        result['Liquidation result'] = 'GG'
+
+                        return json.dumps(result)
                     if before_position == 'Short' and liquidation_price <= high:
-                        print(f'[*] Liquidation(Short) : {current_candle_time} / '
-                              f'Liquidation price : {liquidation_price}, high : {high}, tissue : ${self.balance}... GG')
-                        exit(0)
+                        result['Liquidation(Short)'] = current_candle_time
+                        result['Liquidation price'] = liquidation_price
+                        result['Liquidation high'] = high
+                        result['Liquidation tissue'] = f'${self.balance}'
+                        result['Liquidation result'] = 'GG'
+
+                        return json.dumps(result)
 
             if profit_and_loss > 0:
                 win_count += 1
@@ -106,15 +117,22 @@ class Backtest:
 
             if self.balance <= 0:
                 print('[*] Bankruptcy!!!')
-                break
+                result['Critical'] = 'Bankruptcy!!!'
 
-            print(f'[*] #{i} / {date} position : {before_position}, Size : ${before_balance}, ROE : {roe}%, '
-                  f'Leverage_roe : {leverage_roe}%, PNL : ${profit_and_loss}, balance : ${self.balance}')
+                return json.dumps(result)
+
+            result[f'{i}'] = f'{date} position : {before_position}, Size : ${before_balance}, ROE : {roe}%, ' \
+                             f'Leverage_roe : {leverage_roe}%, PNL : ${profit_and_loss}, balance : ${self.balance}'
             before_position = position
             before_date = date
 
         winning_percentage = win_count / total_trade_count * 100
-        print(f'[*] Winning Percentage : {round(winning_percentage, 2)}%, Total trade count : {total_trade_count}, '
-              f'Total Win count : {win_count}, Total Loss count : {loss_count}, '
-              f'Total Win pnl : ${total_win_pnl}, '
-              f'Total Loss pnl : ${total_loss_pnl}, Total fee : ${round(total_fee, 3)}')
+        result['Winning Percentage'] = f'{round(winning_percentage, 2)}%'
+        result['Total trade count'] = total_trade_count
+        result['Total Win count'] = win_count
+        result['Total Loss count'] = loss_count
+        result['Total Win pnl'] = total_win_pnl
+        result['Total Loss pnl'] = total_loss_pnl
+        result['Total fee'] = f'${round(total_fee, 3)}'
+
+        return json.dumps(result)

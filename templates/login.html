@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='assets/favicon.ico') }}"/>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"></script>
+    <link href="{{ url_for('static', filename='css/signin.css') }}" rel="stylesheet">
+    <title>트뷰 백테 로그인</title>
+</head>
+<body class="bg-dark text-white text-center">
+<main class="form-signin w-100 m-auto">
+    <form method="POST" action="/login/proc">
+        <img class="mb-4" src="{{ url_for('static', filename='assets/bitcoin.svg') }}" alt="" width="128" height="128">
+        <h1 class="h3 mb-3 fw-normal">트뷰 백테</h1>
+
+        <div class="form-floating">
+            <input type="text" class="form-control bg-dark text-white" id="userId" name="userId" placeholder="id">
+            <label for="userId">ID</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control bg-dark text-white" id="userPw" name="userPw"
+                   placeholder="Password">
+            <label for="userPw">Password</label>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">로그인</button>
+    </form>
+    <button class="w-100 mt-3 btn btn-lg btn-secondary" onclick="location.href='/'">돌아가기</button>
+    <p class="mt-5 mb-3 text-white">© 2022 owen151128</p>
+</main>
+</body>
+</html>

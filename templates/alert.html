@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='assets/favicon.ico') }}"/>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"></script>
+    <title>TradingView 백테</title>
+</head>
+<body>
+<script type="text/javascript">
+    alert("{{ message }}")
+    document.location.href = "{{ redirect }}"
+</script>
+</body>
+</html>
