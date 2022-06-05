@@ -118,12 +118,6 @@ class Backtest:
             self.balance -= before_balance * self.fee + self.balance * self.fee
             self.balance = round(self.balance, 3)
 
-            if self.balance <= 0:
-                print('[*] Bankruptcy!!!')
-                result['Critical'] = 'Bankruptcy!!!'
-
-                return json.dumps(result)
-
             result[f'{i}'] = f'{date} position : {before_position}, Size : ${before_balance}, ROE : {roe}%, ' \
                              f'Leverage_roe : {leverage_roe}%, PNL : ${profit_and_loss}, balance : ${self.balance}'
             before_position = position
@@ -137,5 +131,11 @@ class Backtest:
         result['Total Win pnl'] = total_win_pnl
         result['Total Loss pnl'] = total_loss_pnl
         result['Total fee'] = f'${round(total_fee, 3)}'
+
+        if self.balance <= 0:
+            print('[*] Bankruptcy!!!')
+            result['Critical'] = 'Bankruptcy!!!'
+
+            return json.dumps(result)
 
         return json.dumps(result)
