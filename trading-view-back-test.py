@@ -77,8 +77,8 @@ def main():
 
     api_key_manager = BinanceApiKeyManager(args.k)
 
-    binance_history_klines_manager = BinanceHistoryKlinesManager('2019-09-09 00:00', datetime.datetime.now().strftime(
-        BinanceHistoryKlinesManager.time_format), Client.KLINE_INTERVAL_1HOUR, api_key_manager)
+    binance_history_klines_manager = BinanceHistoryKlinesManager('2022-05-16 09:00', datetime.datetime.now().strftime(
+        BinanceHistoryKlinesManager.time_format), Client.KLINE_INTERVAL_1MINUTE, api_key_manager)
     binance_history_klines_manager.get_klines(args.b, args.d)
 
     balance = 10000
@@ -86,6 +86,23 @@ def main():
     binance_klines_data = pd.read_excel(args.b, sheet_name='Sheet1', index_col=0)
     backtest = Backtest(balance, trade_data, binance_klines_data)
     backtest.calculate_balance(False, 1)
+
+
+def one_minutes_validation():
+    is_first = True
+    df = pd.read_excel('binance_1m_candle_history.xlsx', sheet_name='Sheet1', index_col=0)
+    current_time: datetime.datetime = datetime.datetime.now()
+    for i, r in df.iterrows():
+        if is_first:
+            current_time = datetime.datetime.strptime(str(i), '%Y-%m-%d %H:%M')
+            is_first = False
+        else:
+            current_time += datetime.timedelta(minutes=1)
+        if datetime.datetime.strptime(str(i), '%Y-%m-%d %H:%M') != current_time:
+            print(f'[*] Illegal expected : {i}, actual : {current_time}')
+            break
+        else:
+            print(f'[*] Passed : {i}')
 
 
 if __name__ == '__main__':
