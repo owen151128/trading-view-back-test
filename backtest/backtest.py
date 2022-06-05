@@ -83,7 +83,10 @@ class Backtest:
                 for e in range(int(elapsed_hours)):
                     current_candle_time = (before_datetime + timedelta(hours=e)) \
                         .strftime(BinanceHistoryKlinesManager.time_format)
-                    candle = self.binance_klines_data.loc[current_candle_time]
+                    try:
+                        candle = self.binance_klines_data.loc[current_candle_time]
+                    except:
+                        break
                     high, low = candle["high"], candle["low"]
 
                     if before_position == 'Long' and liquidation_price >= low:
