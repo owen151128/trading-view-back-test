@@ -94,9 +94,10 @@ def logout():
 
 @app.route('/trading_view/backtest/request', methods=['POST'])
 def request_backtest():
-    token, balance, leverage, candle_size, csv_data = request.json['token'], int(request.json['balance']), \
-                                                      int(request.json['leverage']), request.json['candleSize'], \
-                                                      request.json['data']
+    token, balance, leverage, stop_loss, candle_size, csv_data = request.json['token'], int(request.json['balance']), \
+                                                                 int(request.json['stopLoss']), \
+                                                                 int(request.json['leverage']), \
+                                                                 request.json['candleSize'], request.json['data']
 
     trade_data = TradingViewCsvParser.parse_trading_view_csv_from_encoded(csv_data)
     is_day = False
@@ -113,7 +114,7 @@ def request_backtest():
 
     backtest = Backtest(balance, trade_data, binance_klines_data)
 
-    return backtest.calculate_balance(is_day, is_1min, leverage)
+    return backtest.calculate_balance(is_day, stop_loss, is_1min, leverage)
 
 
 if __name__ == '__main__':

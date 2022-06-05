@@ -10,6 +10,7 @@ window.onload = () => {
 
     const balance = document.getElementById("balance");
     const leverage = document.getElementById("leverage");
+    const stopLoss = document.getElementById("stop_loss");
     const backtestResult = document.getElementById("backtest_result");
 
     uploadBox.addEventListener('dragover', function (e) {
@@ -46,6 +47,8 @@ window.onload = () => {
             alert('잔고를 입력해 주세요.');
         } else if (leverage.value === 0) {
             alert('레버리지 를 입력해 주세요.');
+        } else if (stopLoss.value === 0) {
+            alert('손절가 를 입력해 주세요.');
         } else {
             const fileReader = new FileReader();
             fileReader.onload = e => {
@@ -61,6 +64,7 @@ window.onload = () => {
                     'token': token,
                     'balance': balance.value,
                     'leverage': leverage.value,
+                    'stopLoss': stopLoss.value,
                     'candleSize': candleSize.options[candleSize.selectedIndex].value,
                     'data': dataUrl
                 };
