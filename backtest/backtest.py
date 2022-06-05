@@ -103,6 +103,7 @@ class Backtest:
                     result['Liquidation tissue'] = f'${self.balance}'
                     result['Liquidation result'] = 'GG'
                     return json.dumps(result)
+
                 if before_position == 'Short' and liquidation_price <= high:
                     result['Liquidation(Short)'] = current_candle_time
                     result['Liquidation price'] = liquidation_price
@@ -111,6 +112,7 @@ class Backtest:
                     result['Liquidation result'] = 'GG'
 
                     return json.dumps(result)
+
                 if before_position == 'Long' and stop_loss_price >= low:
                     roe = round(stop_loss_price / opened_price * 100 - 100, 3)
                     roe *= -1 if before_position == 'Short' else 1
@@ -119,6 +121,7 @@ class Backtest:
                     else:
                         leverage_roe = roe
                     profit_and_loss = round(self.balance * leverage_roe * 0.01, 3)
+
                 if before_position == 'Short' and stop_loss_price <= high:
                     roe = round(stop_loss_price / opened_price * 100 - 100, 3)
                     roe *= -1 if before_position == 'Short' else 1

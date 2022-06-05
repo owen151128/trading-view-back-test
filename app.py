@@ -94,7 +94,7 @@ def logout():
 
 @app.route('/trading_view/backtest/request', methods=['POST'])
 def request_backtest():
-    token, balance, leverage, stop_loss, candle_size, csv_data = request.json['token'], int(request.json['balance']), \
+    token, balance, stop_loss, leverage, candle_size, csv_data = request.json['token'], int(request.json['balance']), \
                                                                  int(request.json['stopLoss']), \
                                                                  int(request.json['leverage']), \
                                                                  request.json['candleSize'], request.json['data']
