@@ -20,7 +20,7 @@ class Backtest:
         self.trade_data = trade_data
         self.binance_klines_data = binance_klines_data
 
-    def calculate_balance(self, is_day: bool, leverage_rate: int = 1) -> str:
+    def calculate_balance(self, is_day: bool, is_1min: bool, leverage_rate: int = 1) -> str:
         result = {}
         total_trade_count = len(self.trade_data)
         total_fee = 0
@@ -49,9 +49,9 @@ class Backtest:
                     )
                     # opened_price = int(self.binance_klines_data.loc[f'{before_date} 00:00']['open'])
                     # closed_price = int(self.binance_klines_data.loc[f'{date} 00:00']['open'])
-                    elapsed_hours = (datetime.strptime(f'{date} 09:00', BinanceHistoryKlinesManager.time_format) -
+                    elapsed_times = (datetime.strptime(f'{date} 09:00', BinanceHistoryKlinesManager.time_format) -
                                      datetime.strptime(f'{before_date} 09:00', BinanceHistoryKlinesManager.time_format))
-                    elapsed_hours = elapsed_hours.days * 24
+                    elapsed_times = elapsed_times.seconds / 360 + elapsed_times.days * 24
                     before_datetime = datetime.strptime(f'{before_date} 09:00', BinanceHistoryKlinesManager.time_format)
                 else:
                     opened_price = int(self.binance_klines_data.loc[before_date]["open"] - 100) \
@@ -60,9 +60,12 @@ class Backtest:
                         if before_position == 'Long' else int(self.binance_klines_data.loc[date]["open"] + 100)
                     # opened_price = int(self.binance_klines_data.loc[before_date]['open'])
                     # closed_price = int(self.binance_klines_data.loc[date]['open'])
-                    elapsed_hours = (datetime.strptime(date, BinanceHistoryKlinesManager.time_format) -
+                    elapsed_times = (datetime.strptime(date, BinanceHistoryKlinesManager.time_format) -
                                      datetime.strptime(before_date, BinanceHistoryKlinesManager.time_format))
-                    elapsed_hours = elapsed_hours.seconds / 60 + (elapsed_hours.days * 24) / 60
+                    if is_1min:
+                        elapsed_times = elapsed_times.seconds / 60 + elapsed_times.days * 24 * 60
+                    else:
+                        elapsed_times = elapsed_times.seconds / 360 + elapsed_times.days * 24
                     before_datetime = datetime.strptime(before_date, BinanceHistoryKlinesManager.time_format)
             except:
                 break
@@ -80,9 +83,13 @@ class Backtest:
                 liquidation_percent = 100 / leverage_rate
                 liquidation_price = opened_price * (1 - liquidation_percent / 100) if before_position == 'Long' \
                     else opened_price * (1 + liquidation_percent / 100)
-                for e in range(int(elapsed_hours)):
-                    current_candle_time = (before_datetime + timedelta(hours=e)) \
-                        .strftime(BinanceHistoryKlinesManager.time_format)
+                for e in range(int(elapsed_times)):
+                    if is_1min:
+                        current_candle_time = (before_datetime + timedelta(minutes=e)) \
+                            .strftime(BinanceHistoryKlinesManager.time_format)
+                    else:
+                        current_candle_time = (before_datetime + timedelta(hours=e)) \
+                            .strftime(BinanceHistoryKlinesManager.time_format)
                     try:
                         candle = self.binance_klines_data.loc[current_candle_time]
                     except:

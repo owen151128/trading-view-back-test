@@ -100,8 +100,10 @@ def request_backtest():
 
     trade_data = TradingViewCsvParser.parse_trading_view_csv_from_encoded(csv_data)
     is_day = False
+    is_1min = False
     if candle_size == '1m':
         binance_klines_data = pd.read_excel('binance_1m_candle_history.xlsx', sheet_name='Sheet1', index_col=0)
+        is_1min = True
     elif candle_size == '1h' or candle_size == '2h' or candle_size == '4h' or candle_size == '6h' or \
             candle_size == '8h' or candle_size == '12h':
         binance_klines_data = pd.read_excel('binance_1h_candle_history.xlsx', sheet_name='Sheet1', index_col=0)
@@ -111,7 +113,7 @@ def request_backtest():
 
     backtest = Backtest(balance, trade_data, binance_klines_data)
 
-    return backtest.calculate_balance(is_day, leverage)
+    return backtest.calculate_balance(is_day, is_1min, leverage)
 
 
 if __name__ == '__main__':
