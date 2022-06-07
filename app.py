@@ -94,10 +94,10 @@ def logout():
 
 @app.route('/trading_view/backtest/request', methods=['POST'])
 def request_backtest():
-    token, balance, leverage, stop_loss, long_name, short_name, position_reverse, candle_size, csv_data = \
+    token, balance, leverage, stop_loss, long_name, short_name, candle_size, csv_data = \
         request.json['token'], int(request.json['balance']), int(request.json['leverage']), \
         int(request.json['stopLoss']), request.json['long_name'], request.json['short_name'], \
-        request.json['reverse_position'], request.json['candleSize'], request.json['data']
+        request.json['candleSize'], request.json['data']
 
     trade_data = TradingViewCsvParser.parse_trading_view_csv_from_encoded(csv_data)
     is_day = False
