@@ -76,7 +76,7 @@ class Backtest:
                 break
 
             roe = round(closed_price / opened_price * 100 - 100, 3)
-            roe *= -1 if before_position == self.long_name else 1
+            roe *= -1 if before_position == self.short_name else 1
             if leverage_rate > 1:
                 leverage_roe = round(roe * leverage_rate, 3)
             else:
