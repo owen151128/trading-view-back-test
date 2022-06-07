@@ -94,10 +94,10 @@ def logout():
 
 @app.route('/trading_view/backtest/request', methods=['POST'])
 def request_backtest():
-    token, balance, stop_loss, leverage, candle_size, csv_data = request.json['token'], int(request.json['balance']), \
-                                                                 int(request.json['stopLoss']), \
-                                                                 int(request.json['leverage']), \
-                                                                 request.json['candleSize'], request.json['data']
+    token, balance, leverage, stop_loss, long_name, short_name, position_reverse, candle_size, csv_data = \
+        request.json['token'], int(request.json['balance']), int(request.json['leverage']), \
+        int(request.json['stopLoss']), request.json['long_name'], request.json['short_name'], \
+        request.json['reverse_position'], request.json['candleSize'], request.json['data']
 
     trade_data = TradingViewCsvParser.parse_trading_view_csv_from_encoded(csv_data)
     is_day = False
@@ -112,7 +112,7 @@ def request_backtest():
         is_day = True
         binance_klines_data = pd.read_excel('binance_1h_candle_history.xlsx', sheet_name='Sheet1', index_col=0)
 
-    backtest = Backtest(balance, trade_data, binance_klines_data)
+    backtest = Backtest(balance, trade_data, binance_klines_data, long_name, short_name)
 
     return backtest.calculate_balance(is_day, stop_loss, is_1min, leverage)
 

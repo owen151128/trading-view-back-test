@@ -12,13 +12,18 @@ class Backtest:
     is_first = True
     fee = 0.0004
     balance = 0
+    long_name = ''
+    short_name = ''
     trade_data: list = None
     binance_klines_data: DataFrame = None
 
-    def __init__(self, balance: int, trade_data: list, binance_klines_data: DataFrame):
+    def __init__(self, balance: int, trade_data: list, binance_klines_data: DataFrame,
+                 long_name='Long', short_name='Short'):
         self.balance = balance
         self.trade_data = trade_data
         self.binance_klines_data = binance_klines_data
+        self.long_name = long_name
+        self.short_name = short_name
 
     def calculate_balance(self, is_day: bool, stop_loss: int, is_1min: bool, leverage_rate: int = 1) -> str:
         result = {}
@@ -40,11 +45,11 @@ class Backtest:
             try:
                 if is_day:
                     opened_price = int(self.binance_klines_data.loc[f'{before_date} 09:00']["open"] + 100) \
-                        if before_position == 'Long' else int(
+                        if before_position == self.long_name else int(
                         self.binance_klines_data.loc[f'{before_date} 09:00']["open"] - 100
                     )
                     closed_price = int(self.binance_klines_data.loc[f'{date} 09:00']["open"] - 100) \
-                        if before_position == 'Long' else int(
+                        if before_position == self.long_name else int(
                         self.binance_klines_data.loc[f'{date} 09:00']["open"] + 100
                     )
                     # opened_price = int(self.binance_klines_data.loc[f'{before_date} 00:00']['open'])
@@ -55,9 +60,9 @@ class Backtest:
                     before_datetime = datetime.strptime(f'{before_date} 09:00', BinanceHistoryKlinesManager.time_format)
                 else:
                     opened_price = int(self.binance_klines_data.loc[before_date]["open"] - 100) \
-                        if before_position == 'Long' else int(self.binance_klines_data.loc[before_date]["open"] + 100)
+                        if before_position == self.long_name else int(self.binance_klines_data.loc[before_date]["open"] + 100)
                     closed_price = int(self.binance_klines_data.loc[date]["open"] - 100) \
-                        if before_position == 'Long' else int(self.binance_klines_data.loc[date]["open"] + 100)
+                        if before_position == self.long_name else int(self.binance_klines_data.loc[date]["open"] + 100)
                     # opened_price = int(self.binance_klines_data.loc[before_date]['open'])
                     # closed_price = int(self.binance_klines_data.loc[date]['open'])
                     elapsed_times = (datetime.strptime(date, BinanceHistoryKlinesManager.time_format) -
@@ -71,7 +76,7 @@ class Backtest:
                 break
 
             roe = round(closed_price / opened_price * 100 - 100, 3)
-            roe *= -1 if before_position == 'Short' else 1
+            roe *= -1 if before_position == self.long_name else 1
             if leverage_rate > 1:
                 leverage_roe = round(roe * leverage_rate, 3)
             else:
@@ -80,10 +85,10 @@ class Backtest:
 
             # liquidation & stop loss
             liquidation_percent = 100 / leverage_rate
-            liquidation_price = opened_price * (1 - liquidation_percent / 100) if before_position == 'Long' \
+            liquidation_price = opened_price * (1 - liquidation_percent / 100) if before_position == self.long_name \
                 else opened_price * (1 + liquidation_percent / 100)
             stop_loss_price = opened_price * (1 - stop_loss / self.balance / leverage_rate) \
-                if before_position == 'Long' else opened_price * (1 + stop_loss / self.balance / leverage_rate)
+                if before_position == self.long_name else opened_price * (1 + stop_loss / self.balance / leverage_rate)
             for e in range(int(elapsed_times)):
                 if is_1min:
                     current_candle_time = (before_datetime + timedelta(minutes=e)) \
@@ -96,7 +101,7 @@ class Backtest:
                 except:
                     break
                 high, low = candle["high"], candle["low"]
-                if before_position == 'Long' and liquidation_price >= low:
+                if before_position == self.long_name and liquidation_price >= low:
                     result['Liquidation(Long)'] = current_candle_time
                     result['Liquidation price'] = liquidation_price
                     result['Liquidation low'] = low
@@ -104,7 +109,7 @@ class Backtest:
                     result['Liquidation result'] = 'GG'
                     return json.dumps(result)
 
-                if before_position == 'Short' and liquidation_price <= high:
+                if before_position == self.short_name and liquidation_price <= high:
                     result['Liquidation(Short)'] = current_candle_time
                     result['Liquidation price'] = liquidation_price
                     result['Liquidation high'] = high
@@ -113,18 +118,18 @@ class Backtest:
 
                     return json.dumps(result)
 
-                if before_position == 'Long' and stop_loss_price >= low:
+                if before_position == self.long_name and stop_loss_price >= low:
                     roe = round(stop_loss_price / opened_price * 100 - 100, 3)
-                    roe *= -1 if before_position == 'Short' else 1
+                    roe *= -1 if before_position == self.short_name else 1
                     if leverage_rate > 1:
                         leverage_roe = round(roe * leverage_rate, 3)
                     else:
                         leverage_roe = roe
                     profit_and_loss = round(self.balance * leverage_roe * 0.01, 3)
 
-                if before_position == 'Short' and stop_loss_price <= high:
+                if before_position == self.short_name and stop_loss_price <= high:
                     roe = round(stop_loss_price / opened_price * 100 - 100, 3)
-                    roe *= -1 if before_position == 'Short' else 1
+                    roe *= -1 if before_position == self.short_name else 1
                     if leverage_rate > 1:
                         leverage_roe = round(roe * leverage_rate, 3)
                     else:

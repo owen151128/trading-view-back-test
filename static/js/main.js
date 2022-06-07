@@ -11,6 +11,9 @@ window.onload = () => {
     const balance = document.getElementById("balance");
     const leverage = document.getElementById("leverage");
     const stopLoss = document.getElementById("stop_loss");
+    const longPositionName = document.getElementById("long_name");
+    const shortPositionName = document.getElementById("short_name");
+    const reversePosition = document.getElementById("reverse_position")
     const backtestResult = document.getElementById("backtest_result");
 
     uploadBox.addEventListener('dragover', function (e) {
@@ -65,6 +68,8 @@ window.onload = () => {
                     'balance': balance.value,
                     'leverage': leverage.value,
                     'stopLoss': stopLoss.value,
+                    'long_name': longPositionName.value,
+                    'short_name': shortPositionName.value,
                     'candleSize': candleSize.options[candleSize.selectedIndex].value,
                     'data': dataUrl
                 };
